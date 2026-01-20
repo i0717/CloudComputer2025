@@ -1,0 +1,43 @@
+# ====== 基础框架 ======
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# ====== 文档处理 ======
+python-pptx==0.6.23
+PyMuPDF==1.23.8
+pdf2image==1.16.3
+Pillow==10.1.0
+
+# ====== AI/LLM 核心 ======
+# 关键：先安装这些版本
+openai==1.10.0  # 必须1.10.0，与langchain-openai兼容
+langchain==0.1.0
+langchain-openai==0.0.5
+langchain-community==0.0.20
+langchain-core==0.1.23
+
+# ====== 向量数据库 ======
+chromadb==0.4.22
+
+# ====== 配置管理 ======
+python-dotenv==1.0.0
+streamlit==1.28.0
+
+# ====== HTTP客户端 ======
+httpx==0.25.1
+requests==2.31.0
+
+# ====== 工具类 ======
+beautifulsoup4==4.12.2
+lxml==4.9.3
+numpy==1.24.3
+pandas==2.1.4
+
+# ====== 避免冲突的包版本 ======
+protobuf==4.25.8
+packaging==23.2  # 必须23.2，与langchain-core兼容
+typing-extensions==4.8.0
+anyio==3.7.1
