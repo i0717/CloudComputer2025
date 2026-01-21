@@ -21,7 +21,7 @@ st.set_page_config(
 # API配置
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8010")
 
-# 自定义CSS
+# 自定义CSS - 添加颜色类
 st.markdown("""
 <style>
     .main-header {
@@ -79,6 +79,80 @@ st.markdown("""
     .stButton > button {
         width: 100%;
     }
+    .hierarchy-item {
+        padding: 0.5rem 1rem;
+        margin: 0.25rem 0;
+        border-radius: 0.25rem;
+        border-left: 4px solid #3B82F6;
+    }
+    .hierarchy-level-1 {
+        background-color: #EFF6FF;
+        border-left-color: #1D4ED8;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    .hierarchy-level-2 {
+        background-color: #DBEAFE;
+        border-left-color: #3B82F6;
+        margin-left: 1rem;
+        font-weight: 600;
+    }
+    .hierarchy-level-3 {
+        background-color: #E0F2FE;
+        border-left-color: #0EA5E9;
+        margin-left: 2rem;
+    }
+    .hierarchy-level-4 {
+        background-color: #F0F9FF;
+        border-left-color: #38BDF8;
+        margin-left: 3rem;
+    }
+    .hierarchy-level-5 {
+        background-color: #F8FAFC;
+        border-left-color: #94A3B8;
+        margin-left: 4rem;
+    }
+    .content-type-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+    .content-type-directory { background-color: #3B82F6; color: white; }
+    .content-type-chapter { background-color: #10B981; color: white; }
+    .content-type-section { background-color: #F59E0B; color: white; }
+    .content-type-content { background-color: #8B5CF6; color: white; }
+    .content-type-image { background-color: #EC4899; color: white; }
+    .content-type-summary { background-color: #6366F1; color: white; }
+    .content-type-reference { background-color: #64748B; color: white; }
+    .hierarchy-tree {
+        font-family: 'Courier New', monospace;
+        background-color: #F8FAFC;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #E2E8F0;
+    }
+    /* 新增的颜色样式 */
+    .color-main-title { color: #FF0000; }
+    .color-directory { color: #0000FF; }
+    .color-chapter-title { color: #008000; }
+    .color-section-title { color: #FFA500; }
+    .color-image-page { color: #FF69B4; }
+    .color-content { color: #000000; }
+    .color-end-page { color: #800080; }
+    .color-thanks { color: #A52A2A; }
+    .color-references { color: #4B0082; }
+    .color-qa { color: #FF4500; }
+    .color-empty { color: #808080; }
+    .color-summary { color: #20B2AA; }
+    .color-box {
+        padding: 8px 12px;
+        margin: 6px 0;
+        border-radius: 5px;
+        border-left: 5px solid;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -135,7 +209,7 @@ def show_sidebar():
         st.markdown("### 🎯 导航")
         page = st.radio(
             "选择功能",
-            ["🏠 首页", "📤 上传PPT", "📋 文件管理", "🔍 内容扩展", "📚 学习模式", "⚙️ 设置"],
+            ["🏠 首页", "📤 上传PPT", "📋 文件管理", "🔍 内容扩展", "🔍 向量搜索", "📚 学习模式", "🗺️ 层级分析", "⚙️ 设置"],
             label_visibility="collapsed"
         )
 
@@ -171,13 +245,15 @@ def show_sidebar():
             1. **上传PPT文件** → 选择PPT/PPTX文件
             2. **查看解析结果** → 自动分析PPT结构
             3. **智能扩展** → AI生成详细内容
-            4. **导出学习材料** → 支持多种格式
+            4. **层级分析** → 深度分析PPT结构
+            5. **导出学习材料** → 支持多种格式
 
             **功能特点**：
             - 🧠 智能内容扩展
             - 💻 代码示例生成
             - 📖 学习资源推荐
             - ❓ 自测问题生成
+            - 🗺️ 层级结构分析
             - 📊 学习进度跟踪
             """)
 
@@ -196,6 +272,7 @@ def home_page():
         <h3>🎯 核心功能</h3>
         <ul>
         <li><b>智能解析</b>：自动分析PPT结构</li>
+        <li><b>层级分析</b>：深度识别目录结构</li>
         <li><b>知识扩展</b>：AI生成详细解释</li>
         <li><b>代码示例</b>：自动生成相关代码</li>
         <li><b>资源推荐</b>：提供学习参考资料</li>
@@ -212,6 +289,7 @@ def home_page():
         <li>点击左侧"上传PPT"</li>
         <li>选择你的PPT文件</li>
         <li>查看解析结果</li>
+        <li>使用"层级分析"功能</li>
         <li>选择要扩展的内容</li>
         <li>下载学习材料</li>
         </ol>
@@ -235,11 +313,11 @@ def home_page():
 
     with guide_cols[1]:
         st.markdown("""
-        ### 2. 智能扩展
-        - 选择特定幻灯片
-        - 多种扩展类型
-        - 实时进度显示
-        - 批量处理支持
+        ### 2. 层级分析
+        - 智能识别目录结构
+        - 分析标题层级关系
+        - 识别内容类型
+        - 可视化展示结构
         """)
 
     with guide_cols[2]:
@@ -397,7 +475,7 @@ def upload_page():
                     progress_bar.empty()
                     status_text.empty()
 
-                    st.success("✅ 文件处理完成！请在'内容扩展'页面继续操作。")
+                    st.success("✅ 文件处理完成！请在'层级分析'或'内容扩展'页面继续操作。")
 
 
 def file_management_page():
@@ -502,8 +580,8 @@ def show_file_details(file_id: str):
     with col4:
         st.metric("解析状态", "✅ 完成")
 
-    # 标签页
-    tab1, tab2, tab3, tab4 = st.tabs(["📑 幻灯片预览", "🗺️ 大纲视图", "🔑 关键词", "📊 统计图表"])
+    # 标签页 - 只保留3个标签页（删除了大纲视图和统计图表）
+    tab1, tab2, tab3 = st.tabs(["📑 幻灯片预览", "🔑 关键词", "🏗️ 层级结构"])
 
     with tab1:
         slides_preview = file_info.get('slides_preview', [])
@@ -519,14 +597,6 @@ def show_file_details(file_id: str):
                         st.json(slide_detail)
 
     with tab2:
-        outline = file_info.get('structure', {}).get('outline', [])
-        if outline:
-            for item in outline:
-                st.write(item)
-        else:
-            st.info("暂无大纲信息")
-
-    with tab3:
         keywords = file_info.get('structure', {}).get('keywords', [])
         if keywords:
             keyword_text = " ".join([f"`{kw}`" for kw in keywords])
@@ -534,45 +604,63 @@ def show_file_details(file_id: str):
         else:
             st.info("暂无关键词")
 
-    with tab4:
-        # 生成统计图表
-        slides_preview = file_info.get('slides_preview', [])
-        if slides_preview:
-            # 层级分布
-            levels = [s.get('level', 1) for s in slides_preview]
-            level_counts = pd.Series(levels).value_counts().sort_index()
+    with tab3:
+        # 显示层级结构（如果API支持）
+        if "hierarchical_structure" in file_info.get('structure', {}):
+            show_hierarchical_structure_preview(file_info['structure']['hierarchical_structure'])
+        else:
+            st.info("层级结构数据正在加载中...")
+            # 尝试从API获取层级结构
+            hierarchy_response = call_api(f"/api/hierarchy/{file_id}")
+            if "error" not in hierarchy_response:
+                show_hierarchical_structure_preview(hierarchy_response.get("structure", []))
+            else:
+                st.info("暂无层级结构信息，请在层级分析页面生成")
 
-            fig1 = go.Figure(data=[
-                go.Bar(
-                    x=[f"层级 {i}" for i in level_counts.index],
-                    y=level_counts.values,
-                    marker_color='#3B82F6'
-                )
-            ])
-            fig1.update_layout(
-                title="幻灯片层级分布",
-                xaxis_title="层级",
-                yaxis_title="数量",
-                height=300
-            )
-            st.plotly_chart(fig1, use_container_width=True)
 
-            # 标题长度分布
-            title_lengths = [len(s.get('title', '')) for s in slides_preview]
-            fig2 = go.Figure(data=[
-                go.Histogram(
-                    x=title_lengths,
-                    nbinsx=10,
-                    marker_color='#10B981'
-                )
-            ])
-            fig2.update_layout(
-                title="标题长度分布",
-                xaxis_title="标题长度（字符）",
-                yaxis_title="数量",
-                height=300
-            )
-            st.plotly_chart(fig2, use_container_width=True)
+def show_hierarchical_structure_preview(structure: List[Dict]):
+    """显示层级结构预览"""
+    if not structure:
+        st.info("暂无层级结构信息")
+        return
+
+    st.markdown("### 🏗️ 层级结构预览")
+    
+    # 内容类型统计
+    content_types = {}
+    for item in structure:
+        content_type = item.get('content_type', '未知')
+        content_types[content_type] = content_types.get(content_type, 0) + 1
+    
+    # 显示统计
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("总结构元素", len(structure))
+    with col2:
+        st.metric("内容类型数", len(content_types))
+    with col3:
+        max_level = max([item.get('hierarchical_level', 1) for item in structure])
+        st.metric("最大层级深度", max_level)
+    
+    # 显示前5个结构元素
+    st.markdown("#### 结构元素示例")
+    for i, item in enumerate(structure[:5]):
+        with st.expander(f"元素 {i+1}: {item.get('title', '无标题')}"):
+            content_type = item.get('content_type', '未知')
+            level = item.get('hierarchical_level', 1)
+            
+            st.write(f"**内容类型**: `{content_type}`")
+            st.write(f"**层级**: {level}")
+            if item.get('parent_titles'):
+                st.write(f"**上级路径**: {' > '.join(item['parent_titles'])}")
+            
+            if item.get('content_elements'):
+                st.write("**内容元素**:")
+                for elem in item['content_elements'][:3]:
+                    st.write(f"- {elem.get('type')}: {elem.get('content', '')[:50]}...")
+    
+    if len(structure) > 5:
+        st.info(f"还有 {len(structure) - 5} 个结构元素未显示...（详情请看层级分析页面）")
 
 
 def expansion_page():
@@ -716,7 +804,6 @@ def expansion_page():
                                     show_expansion_preview(result_response)
 
                                     # 下载选项
-                                    # 在 expansion_page() 函数中
                                     st.markdown("### 📥 下载扩展内容")
                                     col1, col2 = st.columns(2)
 
@@ -855,6 +942,332 @@ def learning_mode_page():
         st.warning("请先选择一个文件来生成测验")
 
 
+def hierarchy_analysis_page():
+    """层级分析页面"""
+    st.markdown('<h2 class="sub-header">🗺️ PPT层级结构分析</h2>', unsafe_allow_html=True)
+
+    if 'current_file_id' not in st.session_state or not st.session_state.current_file_id:
+        st.warning("⚠️ 请先在文件管理页面选择一个文件")
+        return
+
+    file_id = st.session_state.current_file_id
+
+    # 获取文件详情
+    file_response = call_api(f"/api/file/{file_id}")
+    if "error" in file_response:
+        st.error(f"获取文件失败: {file_response['error']}")
+        return
+
+    file_info = file_response
+    filename = file_info.get('filename', '未知文件')
+    total_slides = file_info.get('structure', {}).get('total_slides', 0)
+
+    st.markdown(f"### 📄 当前文件: {filename}")
+    st.markdown(f"**幻灯片总数**: {total_slides}")
+
+    # 分析选项
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        analyze_depth = st.selectbox(
+            "分析深度",
+            ["全部层级", "仅顶层结构", "详细分析"],
+            help="选择层级分析的详细程度"
+        )
+    with col2:
+        show_elements = st.selectbox(
+            "显示内容",
+            ["所有元素", "仅标题层级", "内容类型分布"],
+            help="选择要显示的内容类型"
+        )
+    with col3:
+        if st.button("🔄 重新分析结构", use_container_width=True):
+            with st.spinner("正在重新分析层级结构..."):
+                # 调用层级分析API
+                analysis_response = call_api(f"/api/analyze-hierarchy/{file_id}", "POST")
+                if "error" in analysis_response:
+                    st.error(f"分析失败: {analysis_response['error']}")
+                else:
+                    st.success("✅ 层级结构分析完成！")
+                    st.rerun()
+
+    # 获取层级结构数据
+    st.markdown("---")
+    st.markdown("### 🏗️ 层级结构分析")
+
+    # 尝试从API获取层级结构
+    hierarchy_response = call_api(f"/api/hierarchy/{file_id}")
+    
+    if "error" in hierarchy_response:
+        # 如果没有层级数据，显示提示
+        st.info("该文件尚未进行层级结构分析。")
+        if st.button("🔍 开始层级分析", type="primary"):
+            with st.spinner("正在分析PPT层级结构..."):
+                analysis_response = call_api(f"/api/analyze-hierarchy/{file_id}", "POST")
+                if "error" in analysis_response:
+                    st.error(f"分析失败: {analysis_response['error']}")
+                else:
+                    st.success("✅ 层级结构分析完成！")
+                    st.rerun()
+    else:
+        # 显示层级结构
+        structure = hierarchy_response.get("structure", [])
+        if structure:
+            display_hierarchical_structure(structure, analyze_depth, show_elements)
+        else:
+            st.info("暂无层级结构数据")
+
+
+def display_hierarchical_structure(structure: List[Dict], depth_filter: str, element_filter: str):
+    """显示层级结构"""
+    
+    # 内容类型颜色映射
+    content_type_colors = {
+        "主标题": "#FF0000",  # 红色
+        "目录": "#0000FF",    # 蓝色
+        "章节标题": "#008000",  # 绿色
+        "小节标题": "#FFA500",  # 橙色
+        "图片页": "#FF69B4",   # 粉色
+        "正文": "#000000",    # 黑色
+        "结尾页": "#800080",   # 紫色
+        "致谢": "#A52A2A",    # 棕色
+        "参考文献": "#4B0082",  # 靛蓝
+        "问答": "#FF4500",    # 橙红色
+        "空白页": "#808080",   # 灰色
+        "摘要总结": "#20B2AA",  # 浅海蓝
+        "目录页": "#0000FF",   # 蓝色（同目录）
+        "代码示例": "#8B4513",  # 马鞍棕
+        "标题": "#2E8B57",    # 海绿色
+        "表格": "#4682B4",    # 钢蓝色
+        "图片描述": "#FF69B4"   # 粉色（同图片页）
+    }
+    
+    # 根据过滤条件筛选数据
+    filtered_structure = structure
+    
+    if depth_filter == "仅顶层结构":
+        filtered_structure = [s for s in structure if s.get('hierarchical_level', 1) <= 2]
+    elif depth_filter == "详细分析":
+        filtered_structure = structure  # 显示所有
+    
+    if element_filter == "仅标题层级":
+        filtered_structure = [s for s in filtered_structure if s.get('content_type') in ["主标题", "目录", "章节标题", "小节标题", "标题"]]
+    elif element_filter == "内容类型分布":
+        # 显示统计而不是详细列表
+        show_content_type_distribution(structure)
+        return
+    
+    # 显示扁平化列表（不使用树形缩进）
+    st.markdown("#### 📋 结构列表（按颜色分类）")
+    
+    for item in filtered_structure:
+        content_type = item.get('content_type', '未知')
+        title = item.get('title', '无标题')
+        slide_num = item.get('slide_number', 0) + 1
+        level = item.get('hierarchical_level', 1)
+        
+        # 获取颜色
+        color = content_type_colors.get(content_type, '#000000')
+        
+        # 显示每个项目，不使用缩进
+        st.markdown(f"""
+        <div style="
+            padding: 12px;
+            margin: 6px 0;
+            border-left: 5px solid {color};
+            background-color: {color}10;
+            border-radius: 5px;
+        ">
+            <span style="font-weight: bold; color: {color}; font-size: 0.9rem;">{content_type}</span>
+            <span style="margin: 0 8px; color: #666;">•</span>
+            <span style="font-weight: 600;">幻灯片 {slide_num}</span>
+            <span style="margin: 0 8px; color: #666;">•</span>
+            <span>{title}</span>
+            <span style="margin: 0 8px; color: #666;">•</span>
+            <span style="font-size: 0.8rem; color: #888;">层级 {level}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # 显示内容元素的详细信息（使用按钮切换显示）
+        if item.get('content_elements'):
+            # 为每个项目创建一个唯一的key
+            show_key = f"show_content_{item.get('slide_number', 0)}"
+            
+            # 初始化session state
+            if show_key not in st.session_state:
+                st.session_state[show_key] = False
+            
+            col1, col2 = st.columns([1, 5])
+            with col1:
+                button_label = "隐藏内容" if st.session_state[show_key] else f"显示内容元素 ({len(item['content_elements'])} 个)"
+                if st.button(button_label, key=f"btn_{show_key}", use_container_width=True):
+                    st.session_state[show_key] = not st.session_state[show_key]
+                    st.rerun()
+            
+            # 如果按钮被点击，显示内容元素
+            if st.session_state[show_key]:
+                for elem in item['content_elements']:
+                    elem_type = elem.get('type', '未知')
+                    elem_content = elem.get('content', '')
+                    importance = elem.get('importance', 'medium')
+                    
+                    importance_color = {
+                        'high': '#EF4444',
+                        'medium': '#F59E0B',
+                        'low': '#6B7280'
+                    }.get(importance, '#6B7280')
+                    
+                    st.markdown(f"""
+                    <div style="
+                        margin-left: 20px;
+                        padding: 8px;
+                        border-left: 3px solid {importance_color};
+                        background-color: {importance_color}10;
+                        margin-bottom: 4px;
+                        border-radius: 3px;
+                    ">
+                        <strong>{elem_type}</strong>: {elem_content[:100]}{'...' if len(elem_content) > 100 else ''}
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+    # 显示统计信息
+    st.markdown("---")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        total_items = len(structure)
+        st.metric("总结构元素", total_items)
+    
+    with col2:
+        max_level = max([item.get('hierarchical_level', 1) for item in structure])
+        st.metric("最大层级深度", max_level)
+    
+    with col3:
+        content_types = set([item.get('content_type', '未知') for item in structure])
+        st.metric("内容类型数", len(content_types))
+    
+    # 显示内容类型分布
+    st.markdown("#### 📊 内容类型分布")
+    content_type_counts = {}
+    for item in structure:
+        content_type = item.get('content_type', '未知')
+        content_type_counts[content_type] = content_type_counts.get(content_type, 0) + 1
+    
+    # 创建数据框
+    df_types = pd.DataFrame({
+        '内容类型': list(content_type_counts.keys()),
+        '数量': list(content_type_counts.values())
+    }).sort_values('数量', ascending=False)
+    
+    # 显示表格
+    st.dataframe(df_types, use_container_width=True)
+    
+    # 创建柱状图（使用对应的颜色）
+    colors = [content_type_colors.get(ctype, '#808080') for ctype in df_types['内容类型']]
+    
+    fig = go.Figure(data=[
+        go.Bar(
+            x=df_types['内容类型'],
+            y=df_types['数量'],
+            marker_color=colors,
+            text=df_types['数量'],
+            textposition='auto'
+        )
+    ])
+    fig.update_layout(
+        title="内容类型分布",
+        xaxis_title="内容类型",
+        yaxis_title="数量",
+        height=400,
+        showlegend=False
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # 显示层级深度分布
+    st.markdown("#### 📈 层级深度分布")
+    level_counts = {}
+    for item in structure:
+        level = item.get('hierarchical_level', 1)
+        level_counts[level] = level_counts.get(level, 0) + 1
+    
+    df_levels = pd.DataFrame({
+        '层级': list(level_counts.keys()),
+        '数量': list(level_counts.values())
+    }).sort_values('层级')
+    
+    fig2 = go.Figure(data=[
+        go.Scatter(
+            x=df_levels['层级'],
+            y=df_levels['数量'],
+            mode='lines+markers',
+            line=dict(color='#10B981', width=3),
+            marker=dict(size=10, color='#10B981')
+        )
+    ])
+    fig2.update_layout(
+        title="层级深度分布",
+        xaxis_title="层级深度",
+        yaxis_title="元素数量",
+        height=400
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+    
+    # 显示内容类型颜色图例
+    st.markdown("#### 🎨 颜色图例说明")
+    
+    # 组织图例显示，每行显示4个
+    legend_items = list(content_type_colors.items())
+    
+    for i in range(0, len(legend_items), 4):
+        cols = st.columns(4)
+        row_items = legend_items[i:i+4]
+        
+        for idx, (content_type, color) in enumerate(row_items):
+            with cols[idx]:
+                st.markdown(f"""
+                <div style="
+                    padding: 8px;
+                    margin: 4px 0;
+                    border-left: 4px solid {color};
+                    background-color: {color}15;
+                    border-radius: 3px;
+                ">
+                    <span style="color: {color}; font-weight: bold;">■</span>
+                    <span style="margin-left: 8px; font-size: 0.9rem;">{content_type}</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+
+def show_content_type_distribution(structure: List[Dict]):
+    """显示内容类型分布"""
+    content_type_counts = {}
+    for item in structure:
+        content_type = item.get('content_type', '未知')
+        content_type_counts[content_type] = content_type_counts.get(content_type, 0) + 1
+    
+    # 创建饼图
+    fig = go.Figure(data=[
+        go.Pie(
+            labels=list(content_type_counts.keys()),
+            values=list(content_type_counts.values()),
+            hole=.3
+        )
+    ])
+    fig.update_layout(
+        title="内容类型分布",
+        height=500
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # 显示表格
+    df = pd.DataFrame({
+        '内容类型': list(content_type_counts.keys()),
+        '数量': list(content_type_counts.values()),
+        '占比 (%)': [round(count/len(structure)*100, 1) for count in content_type_counts.values()]
+    }).sort_values('数量', ascending=False)
+    
+    st.dataframe(df, use_container_width=True)
+
+
 def settings_page():
     """设置页面"""
     st.markdown('<h2 class="sub-header">⚙️ 系统设置</h2>', unsafe_allow_html=True)
@@ -871,7 +1284,7 @@ def settings_page():
 
     api_base_url = st.text_input(
         "API基础URL",
-        value=os.getenv("API_BASE_URL", "http://localhost:8000"),
+        value=os.getenv("API_BASE_URL", "http://localhost:8010"),
         help="后端API服务的地址"
     )
 
@@ -917,6 +1330,199 @@ def settings_page():
         st.info("部分设置需要重启应用才能生效")
 
 
+def vector_search_page():
+    """向量搜索页面"""
+    st.markdown('<h2 class="sub-header">🔍 语义向量搜索</h2>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="info-box">
+    <h4>🎯 智能语义搜索</h4>
+    <p>基于向量数据库的语义搜索，可以理解查询的深层含义，找到最相关的内容。</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 搜索配置
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        search_query = st.text_input(
+            "搜索内容",
+            placeholder="输入关键词、问题或概念...",
+            help="支持自然语言搜索，如'机器学习的基本原理'"
+        )
+
+    with col2:
+        n_results = st.number_input(
+            "结果数量",
+            min_value=1,
+            max_value=50,
+            value=10,
+            help="显示的结果数量"
+        )
+
+    # 文件筛选
+    files_response = call_api("/api/files")
+    if "files" in files_response and files_response["files"]:
+        file_options = ["所有文件"] + [f["filename"] for f in files_response["files"]]
+        selected_file = st.selectbox(
+            "筛选文件",
+            file_options,
+            index=0
+        )
+
+        # 获取文件ID
+        file_id = None
+        if selected_file != "所有文件":
+            for f in files_response["files"]:
+                if f["filename"] == selected_file:
+                    file_id = f["file_id"]
+                    break
+    else:
+        st.warning("没有可搜索的文件，请先上传PPT文件")
+        return
+
+    # 相似度阈值
+    similarity_threshold = st.slider(
+        "相似度阈值",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.3,
+        step=0.05,
+        help="过滤相似度低于此值的结果"
+    )
+
+    # 搜索按钮
+    if st.button("🚀 开始语义搜索", type="primary", use_container_width=True):
+        if not search_query.strip():
+            st.warning("请输入搜索内容")
+            return
+
+        with st.spinner("正在搜索..."):
+            # 准备搜索请求
+            search_data = {
+                "query": search_query,
+                "file_id": file_id,
+                "n_results": n_results,
+                "similarity_threshold": similarity_threshold
+            }
+
+            # 调用向量搜索API
+            search_response = call_api("/api/vector-search", "POST", data=search_data)
+
+            if "error" in search_response:
+                st.error(f"搜索失败: {search_response['error']}")
+            else:
+                results = search_response.get("results", [])
+                total_results = search_response.get("total_results", 0)
+                filtered_results = search_response.get("filtered_results", 0)
+
+                # 显示统计
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("总结果数", total_results)
+                with col2:
+                    st.metric("过滤后结果", filtered_results)
+                with col3:
+                    st.metric("相似度阈值", f"{similarity_threshold:.2f}")
+
+                # 显示结果
+                if results:
+                    st.markdown("### 📋 搜索结果")
+
+                    for i, result in enumerate(results):
+                        with st.expander(
+                                f"结果 {i + 1}: 幻灯片 {result['slide_number'] + 1} "
+                                f"(相似度: {result['similarity']:.3f})",
+                                expanded=i == 0
+                        ):
+                            # 显示基本信息
+                            col_a, col_b = st.columns(2)
+                            with col_a:
+                                st.write(f"**文件**: {result['filename']}")
+                                st.write(f"**幻灯片**: {result['slide_number'] + 1}")
+                                st.write(f"**元素类型**: {result['element_type']}")
+
+                            with col_b:
+                                # 相似度可视化
+                                similarity = result['similarity']
+                                color = "#10B981" if similarity > 0.7 else "#F59E0B" if similarity > 0.4 else "#EF4444"
+                                st.markdown(f"""
+                                <div style="background-color: {color}20; padding: 10px; border-radius: 5px;">
+                                    <strong>语义相似度:</strong> 
+                                    <span style="color: {color}; font-weight: bold;">{similarity:.3f}</span>
+                                    <div style="background-color: #E5E7EB; height: 8px; border-radius: 4px; margin-top: 5px;">
+                                        <div style="background-color: {color}; width: {similarity * 100}%; height: 100%; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                            # 显示内容
+                            st.markdown("**内容**:")
+                            st.info(result['content'])
+
+                            # 操作按钮
+                            col_x, col_y = st.columns(2)
+                            with col_x:
+                                if st.button("查看原幻灯片", key=f"view_original_{i}"):
+                                    st.session_state.current_file_id = result['file_id']
+                                    # 这里可以跳转到文件详情页
+                                    st.success(f"已选择文件: {result['filename']}")
+
+                            with col_y:
+                                if st.button("智能扩展此内容", key=f"expand_{i}"):
+                                    # 调用语义扩展
+                                    expand_response = call_api(
+                                        f"/api/semantic-expand/{result['file_id']}",
+                                        "POST",
+                                        data={"slide_number": result['slide_number']}
+                                    )
+                                    if "error" in expand_response:
+                                        st.error(f"扩展失败: {expand_response['error']}")
+                                    else:
+                                        st.success("语义扩展完成！")
+                                        # 显示扩展结果
+                                        result_id = expand_response.get('result_id')
+                                        if result_id:
+                                            st.rerun()
+                else:
+                    st.info("没有找到相关结果，尝试调整搜索词或降低相似度阈值")
+
+    # 向量统计信息
+    if 'current_file_id' in st.session_state and st.session_state.current_file_id:
+        st.markdown("---")
+        st.markdown("### 📊 向量索引统计")
+
+        file_id = st.session_state.current_file_id
+        stats_response = call_api(f"/api/vector-stats/{file_id}")
+
+        if "error" not in stats_response:
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                indexed = stats_response.get('indexed', False)
+                status_color = "#10B981" if indexed else "#EF4444"
+                status_text = "✅ 已索引" if indexed else "❌ 未索引"
+                st.markdown(f"""
+                <div style="text-align: center;">
+                    <h3 style="color: {status_color};">{status_text}</h3>
+                </div>
+                """, unsafe_allow_html=True)
+
+            with col2:
+                total_vectors = stats_response.get('total_vectors', 0)
+                st.metric("向量数量", total_vectors)
+
+            with col3:
+                type_stats = stats_response.get('type_distribution', {})
+                st.metric("元素类型", len(type_stats))
+
+            # 显示类型分布
+            if type_stats:
+                st.markdown("#### 元素类型分布")
+                for elem_type, count in type_stats.items():
+                    st.progress(count / max(total_vectors, 1), text=f"{elem_type}: {count}")
+
+
 def main():
     """主函数"""
     show_header()
@@ -929,7 +1535,7 @@ def main():
         <p>请确保API服务已启动，可以执行以下命令：</p>
         <pre><code>python main.py --mode api</code></pre>
         <p>或者</p>
-        <pre><code>uvicorn api:app --host 0.0.0.0 --port 8000</code></pre>
+        <pre><code>uvicorn api:app --host 0.0.0.0 --port 8010</code></pre>
         </div>
         """, unsafe_allow_html=True)
 
@@ -945,8 +1551,12 @@ def main():
         file_management_page()
     elif page == "🔍 内容扩展":
         expansion_page()
+    elif page == "🔍 向量搜索":  # 新增
+        vector_search_page()
     elif page == "📚 学习模式":
         learning_mode_page()
+    elif page == "🗺️ 层级分析":
+        hierarchy_analysis_page()
     elif page == "⚙️ 设置":
         settings_page()
 
