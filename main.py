@@ -1,3 +1,11 @@
+# 修复 python_pptx 导入问题 - 添加在 main.py 最开头
+import sys
+try:
+    import pptx
+    sys.modules['python_pptx'] = pptx  # 关键：创建别名
+except ImportError:
+    print("错误：请安装 python-pptx: pip install python-pptx")
+    sys.exit(1)
 #!/usr/bin/env python3
 """
 PPT内容扩展智能体 - 主程序
@@ -39,9 +47,11 @@ def check_dependencies():
         return False
 
     try:
-        import langchain
-        import chromadb
+        # 检查核心依赖
         import fastapi
+        import pydantic
+        import python_pptx
+        import httpx
         logger.info("✅ 所有依赖检查通过")
         return True
     except ImportError as e:
